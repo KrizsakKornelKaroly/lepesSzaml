@@ -1,6 +1,19 @@
+const AppTitle = "Lépésszámláló App";
+const Author = "13.A Szoftverfejlesztő";
+const Company = "Bajai SZC Türr István Technikum";
+
+let title = document.querySelector('#Title');
+let company = document.querySelector('#Company');
+let author = document.querySelector('#Author');
+
+title.innerHTML = AppTitle;
+company.innerHTML = Company;
+author.innerHTML = Author;
+
 let lightmodeBtn = document.querySelector('#lightmodeBtn');
 let darkmodeBtn = document.querySelector('#darkmodeBtn');
 
+let main = document.querySelector('main');
 let theme = 'light';
 
 lightmodeBtn.addEventListener('click', ()=> {
@@ -42,4 +55,9 @@ function setThemeBtn(theme){
     }
 }
 
+async function render(view){
+    main.innerHTML = await (await fetch(`views/${view}.html`)).text();
+}
+
 loadTheme();
+render('login');
