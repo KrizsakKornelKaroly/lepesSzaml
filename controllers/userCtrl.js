@@ -3,7 +3,30 @@ const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
 
+
 //Bővíteni bootstrap alertekkel + timerrel eltűnik (3sec)
+
+function regAlerts(message, type){
+    let alertPlaceholder = document.querySelector('#liveAlertPlaceholder')
+    let alert = document.createElement('div')
+    alert.classList.add('alert', `alert-${type}`, 'alert-dismissible', 'fade', 'show')
+
+    let alertBody = document.createElement('div')
+    alertBody.innerHTML = message;
+
+    let alertClose = document.createElement('button')
+    alertClose.classList.add('btn-close')
+    alertClose.dataset.bsDismiss = "alert"
+
+    alert.appendChild(alertBody)
+    alert.appendChild(alertClose)
+
+    alertPlaceholder.appendChild(alert)
+
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
 
 async function registration() {
     /*await fetch('http://localhost:3000/users')
@@ -16,21 +39,21 @@ async function registration() {
     let confirmPasswdField = document.querySelector('#confirmpasswdField')
 
     if (nameField.value == "" || emailField.value == "" || passwdField.value == "" || confirmPasswdField.value == "") {
-        alert("Nem adtál meg minden adatot!")
+        regAlerts("Nem adtál meg minden adatot!", 'danger')
         return;
     }
 
     if (passwdField.value != confirmPasswdField.value) {
-        alert("A megadott jelszavak nem egyeznek!")
+        regAlerts("A megadott jelszavak nem egyeznek!", 'danger')
         return;
     }
 
     if(!passwdRegExp.test(passwdField.value)){
-        alert("A megadott jelszó nem elég biztonságos!")
+        regAlerts("A megadott jelszó nem elég biztonságos!", 'danger')
         return;
     }
     if(!emailRegExp.test(emailField.value)){
-        alert("Nem megfelelő email cím!")
+        regAlerts("Nem megfelelő email cím!", 'danger')
         return;
     }
 
@@ -47,9 +70,10 @@ async function registration() {
                     }
                 )
         });
-        //console.log("Status: ", res.status) 
+        //console.log("Status: ", res.status)
+        let alertStatus = res.status == 200 ? 'success' : 'danger'; 
         const data = await res.json();
-        alert(data.msg)
+        regAlerts(`${data.msg}`, alertStatus);
         if(res.status == 200){
             nameField.value = "";
             emailField.value ="";
