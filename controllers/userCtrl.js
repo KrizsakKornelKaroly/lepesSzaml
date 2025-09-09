@@ -2,6 +2,9 @@ const passwdRegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
+
+//Bővíteni bootstrap alertekkel + timerrel eltűnik (3sec)
+
 async function registration() {
     /*await fetch('http://localhost:3000/users')
     .then(res => res.json())
