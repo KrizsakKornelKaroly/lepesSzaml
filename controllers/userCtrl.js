@@ -13,26 +13,26 @@ async function registration() {
     let confirmPasswdField = document.querySelector('#confirmpasswdField')
 
     if (nameField.value == "" || emailField.value == "" || passwdField.value == "" || confirmPasswdField.value == "") {
-        regAlerts("Nem adtál meg minden adatot!", 'danger')
+        Alerts("Nem adtál meg minden adatot!", 'danger')
         return;
     }
 
     if (passwdField.value != confirmPasswdField.value) {
-        regAlerts("A megadott jelszavak nem egyeznek!", 'danger')
+        Alerts("A megadott jelszavak nem egyeznek!", 'danger')
         return;
     }
 
-    if(!passwdRegExp.test(passwdField.value)){
-        regAlerts("A megadott jelszó nem elég biztonságos!", 'danger')
+    if (!passwdRegExp.test(passwdField.value)) {
+        Alerts("A megadott jelszó nem elég biztonságos!", 'danger')
         return;
     }
-    if(!emailRegExp.test(emailField.value)){
-        regAlerts("Nem megfelelő email cím!", 'danger')
+    if (!emailRegExp.test(emailField.value)) {
+        Alerts("Nem megfelelő email cím!", 'danger')
         return;
     }
 
     try {
-        const res = await fetch('http://localhost:3000/users', {
+        const res = await fetch(`${ServerURL}/users`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body:
@@ -44,13 +44,13 @@ async function registration() {
                     }
                 )
         });
-        let alertStatus = res.status == 200 ? 'success' : 'danger'; 
+        let alertStatus = res.status == 200 ? 'success' : 'danger';
         const data = await res.json();
-        regAlerts(`${data.msg}`, alertStatus);
-        if(res.status == 200){
+        Alerts(`${data.msg}`, alertStatus);
+        if (res.status == 200) {
             nameField.value = "";
-            emailField.value ="";
-            passwdField.value ="";
+            emailField.value = "";
+            passwdField.value = "";
             confirmPasswdField.value = "";
         }
 
@@ -61,12 +61,59 @@ async function registration() {
 
 }
 
-function login() {
+async function login() {
+    let emailField = document.querySelector('#emailField')
+    let passwdField = document.querySelector('#passwdField')
+
+    if (emailField.value == "" || passwdField.value == "") {
+        Alerts("Nem adtál meg minden adatot!", 'danger')
+        return;
+    }
+
+    let user = {};
+    try {
+        const res = await fetch(`${ServerURL}/users/login`, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body:
+                JSON.stringify(
+                    {
+                        email: emailField.value,
+                        password: passwdField.value
+                    }
+                )
+
+        });
+        user = await res.json();
+
+        if (user.id) {
+            loggedUser = user;
+        }
+
+        if (!loggedUser) {
+            Alerts("Hibás belépési adatok!", 'danger')
+            return;
+        }
+
+        sessionStorage.setItem('loggedUser', JSON.stringify(loggedUser));
+        await render('main')
+        getLoggedUser();
+        Alerts("Sikeres bejelentkezés!", 'success')
+
+    } catch (err) {
+        console.log("Hiba történt: ", err);
+    }
+
+
+
+
 
 }
 
 function logout() {
-
+    sessionStorage.removeItem('loggedUser');
+    getLoggedUser();
+    render('login');
 }
 
 function getProfile() {

@@ -1,4 +1,4 @@
-function regAlerts(message, type){
+function Alerts(message, type){
     let alertPlaceholder = document.querySelector('#liveAlertPlaceholder')
     let alert = document.createElement('div')
     alert.classList.add('alert', `alert-${type}`, 'alert-dismissible', 'fade', 'show')
@@ -17,5 +17,5 @@ function regAlerts(message, type){
 
     setTimeout(() => {
         alert.remove();
-    }, 5000);
+    }, 3000);
 }
