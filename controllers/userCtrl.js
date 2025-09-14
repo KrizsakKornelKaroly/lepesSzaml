@@ -150,8 +150,9 @@ async function updateProfile() {
 
         const data = await res.json();
 
-
-        sessionStorage.setItem('loggedUser', JSON.stringify({ id: loggedUser.id, name: nameField.value, email: emailField.value, password: loggedUser.password }));
+        if (res.status == 200) {
+            sessionStorage.setItem('loggedUser', JSON.stringify({ id: loggedUser.id, name: nameField.value, email: emailField.value, password: loggedUser.password }));
+        }
         Alerts(`${data.msg}`, alertStatus);
 
     } catch (error) {
@@ -160,10 +161,12 @@ async function updateProfile() {
 
 }
 
-function updatePassword() {
+async function updatePassword() {
     let oldPasswdField = document.querySelector('#oldPasswdField');
     let newPasswdField = document.querySelector('#newPasswdField');
     let newPasswdFieldAgain = document.querySelector('#newPasswdFieldAgain');
+
+    loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
 
     if (oldPasswdField.value == "" || newPasswdField.value == "" || newPasswdFieldAgain.value == "") {
         Alerts("Nem adtál meg minden adatot! (Jelszómódosítás)", 'danger')
@@ -178,14 +181,36 @@ function updatePassword() {
         return;
     }
     if (!passwdRegExp.test(newPasswdField.value)) {
-        Alerts("Az új jelszó nem elég biztonságos!", 'danger') 
+        Alerts("Az új jelszó nem elég biztonságos!", 'danger')
         return;
     }
     if (oldPasswdField.value == newPasswdField.value) {
-        Alerts("Ez a jelszó jelenleg már használatban van!", 'danger')
+        Alerts("A régi jelszó nem egyezhet az újjal!", 'danger')
         return;
     }
 
-    
+    try {
+        const res = await fetch(`${ServerURL}/users/passmod`, {
+            method: "PATCH",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(
+                {
+                    id: loggedUser.id,
+                    newPassword: newPasswdField.value
+                }
+            )
+        });
+        let alertStatus = res.status == 200 ? 'success' : 'danger';
+        const data = await res.json();
+        if (res.status == 200) {
+            sessionStorage.setItem('loggedUser', JSON.stringify({ id: loggedUser.id, name: loggedUser.name, email: loggedUser.email, password: newPasswdField.value}));
+        }
+
+        Alerts(`${data.msg}`, alertStatus);
+
+    } catch (error) {
+        Alerts(`Hiba történt a jelszómódosítás során! ${error} `, 'danger')
+    }
+
 
 }
