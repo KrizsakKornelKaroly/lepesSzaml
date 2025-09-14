@@ -1,7 +1,6 @@
 const passwdRegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
 async function registration() {
     /*await fetch('http://localhost:3000/users')
     .then(res => res.json())
@@ -103,11 +102,6 @@ async function login() {
     } catch (err) {
         console.log("Hiba történt: ", err);
     }
-
-
-
-
-
 }
 
 function logout() {
@@ -117,13 +111,81 @@ function logout() {
 }
 
 function getProfile() {
+    let emailField = document.querySelector('#emailField');
+    let nameField = document.querySelector('#nameField');
+    let currentUser = JSON.parse(sessionStorage.getItem('loggedUser'));
 
+    emailField.value = currentUser.email;
+    nameField.value = currentUser.name;
 }
 
-function updateProfile() {
+async function updateProfile() {
+    let emailField = document.querySelector('#emailField');
+    let nameField = document.querySelector('#nameField');
+
+    if (nameField.value == "" || emailField.value == "") {
+        Alerts("Nem adtál meg minden adatot! (Adatmódosítás)", 'danger')
+        return;
+    }
+
+    if (!emailRegExp.test(emailField.value)) {
+        Alerts("Nem megfelelő email cím!", 'danger')
+        return;
+    }
+
+    try {
+        const res = await fetch(`${ServerURL}/users/profile`, {
+            method: "PATCH",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(
+                {
+                    id: loggedUser.id,
+                    name: nameField.value,
+                    email: emailField.value
+                }
+            )
+        });
+
+        let alertStatus = res.status == 200 ? 'success' : 'danger';
+
+        const data = await res.json();
+
+
+        sessionStorage.setItem('loggedUser', JSON.stringify({ id: loggedUser.id, name: nameField.value, email: emailField.value, password: loggedUser.password }));
+        Alerts(`${data.msg}`, alertStatus);
+
+    } catch (error) {
+        Alerts(`Hiba történt a módosítás során! ${error} `, 'danger')
+    }
 
 }
 
 function updatePassword() {
+    let oldPasswdField = document.querySelector('#oldPasswdField');
+    let newPasswdField = document.querySelector('#newPasswdField');
+    let newPasswdFieldAgain = document.querySelector('#newPasswdFieldAgain');
+
+    if (oldPasswdField.value == "" || newPasswdField.value == "" || newPasswdFieldAgain.value == "") {
+        Alerts("Nem adtál meg minden adatot! (Jelszómódosítás)", 'danger')
+        return;
+    }
+    if (oldPasswdField.value != loggedUser.password) {
+        Alerts("Hibás régi jelszó!", 'danger')
+        return;
+    }
+    if (newPasswdField.value != newPasswdFieldAgain.value) {
+        Alerts("A megadott új jelszavak nem egyeznek!", 'danger')
+        return;
+    }
+    if (!passwdRegExp.test(newPasswdField.value)) {
+        Alerts("Az új jelszó nem elég biztonságos!", 'danger') 
+        return;
+    }
+    if (oldPasswdField.value == newPasswdField.value) {
+        Alerts("Ez a jelszó jelenleg már használatban van!", 'danger')
+        return;
+    }
+
+    
 
 }

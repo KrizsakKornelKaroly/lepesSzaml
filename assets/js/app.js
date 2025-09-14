@@ -79,5 +79,12 @@ async function getLoggedUser(){
     }
 }
 
+async function LoadComponent(page) {
+    main.innerHTML = await (await fetch(`views/${page}.html`)).text();
+    if (page == 'profile') {
+        getProfile();
+    };
+}
+
 loadTheme();
 getLoggedUser();
