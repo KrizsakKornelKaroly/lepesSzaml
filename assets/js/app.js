@@ -62,16 +62,23 @@ function setThemeBtn(theme) {
 
 async function render(view) {
     main.innerHTML = await (await fetch(`views/${view}.html`)).text();
+
+    switch (view) {
+        case "main": {
+            setDate();
+            break;
+        }
+    }
 }
 
-async function getLoggedUser(){
-    if(sessionStorage.getItem('loggedUser')){
+async function getLoggedUser() {
+    if (sessionStorage.getItem('loggedUser')) {
         loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'))
         mainMenu.classList.add('hide');
         userMenu.classList.remove('hide');
         await render('main');
     }
-    else{
+    else {
         loggedUser = null;
         mainMenu.classList.remove('hide');
         userMenu.classList.add('hide');
