@@ -1,10 +1,23 @@
 let chart = null;
-let chartLabels = ['2025.09.10', '2025.09.11', '2025.09.12', '2025.09.13'];
-let chartData = [1000, 2000, 1500, 3000];
+let chartLabels = [];
+let chartData = [];
 
 async function getChartData() {
-    //lekérdezi a backendtől a user lépésszámait
-    //majd feltölti a labels[] és data[] tömböket
+    chartData = [];
+    chartLabels = [];
+
+    try {
+        const res = await fetch(`${ServerURL}/steps/user/${loggedUser.id}`); 
+        let data = await res.json();
+        data = data.sort((a, b) => { return a['date'].localeCompare(b['date']) });
+        for (let i = 0; i < data.length; i++) {
+            chartLabels.push(data[i].date);
+            chartData.push(data[i].stepcount);
+        }
+    }
+    catch (err) {
+        Alerts("Hiba történt az adatok lekérdezésekor!", 'danger');
+    }
 }
 
 
@@ -15,7 +28,7 @@ function initChart() {
         data: {
             labels: chartLabels,
             datasets: [{
-                label: "test",
+                label: "Lépésszám",
                 data: chartData,
             }
         ]},
