@@ -66,8 +66,11 @@ async function render(view) {
     switch (view) {
         case "main": {
             setDate();
+            await getSteps();
+            renderSteps();
             break;
         }
+
     }
 }
 
