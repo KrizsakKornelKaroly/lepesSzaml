@@ -42,7 +42,7 @@ function initChart() {
                     display: true,
                     text: 'Lépésszámok'
                 }
-            }
+            }    
         }
     }
     );
